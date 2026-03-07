@@ -23,10 +23,9 @@ export class PengembalianService {
       const returnDate = dto.returnDate ? new Date(dto.returnDate) : new Date();
 
       const diffMs = returnDate.getTime() - peminjaman.dueDate.getTime();
-      const lateDays =
-        diffMs > 0 ? Math.ceil(diffMs / (1000 * 60 * 60 * 24)) : 0;
+      const lateDays = diffMs > 0 ? Math.ceil(diffMs / (1000 * 60 * 60 * 24)) : 0;
 
-      const DENDA_PER_HARI = 1000;
+      const DENDA_PER_HARI = 15000;
       const denda = lateDays * DENDA_PER_HARI;
 
       const pengembalian = await tx.pengembalian.create({
@@ -49,11 +48,11 @@ export class PengembalianService {
         returnDate,
         lateDays,
         denda,
+        message: lateDays > 0 ? `Buku terlambat ${lateDays} hari, denda Rp${denda}` : 'Buku dikembalikan tepat waktu',
       };
     });
-  } // ✅ PENUTUP METHOD create()
+  }
 
-  // ✅ METHOD INI SEKARANG DI LUAR create()
   async findAll() {
     return this.prisma.pengembalian.findMany({
       include: {

@@ -10,6 +10,7 @@ import {
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { LoginStudentDto } from './dto/login-student.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -60,5 +61,10 @@ export class StudentsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.studentsService.remove(Number(id));
+  }
+
+  @Post('login')
+  login(@Body() dto: LoginStudentDto) {
+    return this.studentsService.login(dto);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { LoginStudentDto } from './dto/login-student.dto';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from '@prisma/client';
 
@@ -78,5 +79,20 @@ export class StudentsService {
     // pastikan ada dulu
     await this.findOne(id);
     return this.prisma.student.delete({ where: { id } });
+  }
+
+  async login(dto: LoginStudentDto) {
+    const student = await this.prisma.student.findFirst({
+      where: {
+        name: dto.name,
+        email: dto.email,
+      },
+    });
+
+    if (!student) {
+      throw new NotFoundException('Student not found');
+    }
+
+    return student;
   }
 }
