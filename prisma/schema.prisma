@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id        Int      @id @default(autoincrement())
+  nis       String   @unique(map: "Student_nis_key")
+  name      String
+  email     String?  @unique(map: "Student_email_key")
+  kelas     String
+  jurusan   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  peminjamans Peminjaman[]
+
+  user User?
+}
+
+model Book {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique
+  author    String
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  peminjamans Peminjaman[]
+}
+
+model Peminjaman {
+  id         Int              @id @default(autoincrement())
+  studentId  Int
+  bookId     Int
+  borrowDate DateTime         @default(now())
+  dueDate    DateTime
+  returnDate DateTime?
+  status     StatusPeminjaman @default(DIPINJAM)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+  book    Book    @relation(fields: [bookId], references: [id])
+
+  pengembalian Pengembalian?
+}
+
+model Pengembalian {
+  id           Int      @id @default(autoincrement())
+  peminjamanId Int      @unique
+  returnedAt   DateTime @default(now())
+  denda        Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  peminjaman Peminjaman @relation(fields: [peminjamanId], references: [id])
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  password String
+  role     UserRole
+
+  studentId Int?     @unique
+  student   Student? @relation(fields: [studentId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+enum StatusPeminjaman {
+  DIPINJAM
+  DIKEMBALIKAN
+}
+
+enum UserRole {
+  ADMIN
+  PETUGAS
+  STUDENT
+}
+
+// End of file
