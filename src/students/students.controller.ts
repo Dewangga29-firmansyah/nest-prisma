@@ -58,7 +58,7 @@ export class StudentsController {
 
   // SEARCH STUDENT BY NAME
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('search/name/:name')
   filterByName(@Param('name') name: string) {
     return this.studentsService.filterByName(name);
@@ -66,7 +66,7 @@ export class StudentsController {
 
   // FIND STUDENT BY ID
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.studentsService.findOne(Number(id));
