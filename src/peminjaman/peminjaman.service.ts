@@ -87,7 +87,7 @@ export class PeminjamanService {
       // 3️⃣ kembalikan pesan
       return {
         message:
-          'Buku sedang dipinjam, anda bisa pinjam buku yang lain',
+          'Buku sedang dipinjam',
         availableBooks,
       };
     }

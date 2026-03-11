@@ -83,6 +83,7 @@ export class StudentsService {
 
   async login(dto: LoginStudentDto) {
     const student = await this.prisma.student.findFirst({
+      
       where: {
         name: dto.name,
         email: dto.email,
