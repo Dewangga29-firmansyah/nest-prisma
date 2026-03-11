@@ -13,7 +13,8 @@ export class PeminjamanController {
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @UseGuards(JwtAuthGuard, RolesGuard)
 
-  // GET /peminjaman
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get()
   findAll() {
     return this.peminjamanService.findAll();
