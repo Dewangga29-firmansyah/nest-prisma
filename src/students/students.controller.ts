@@ -8,7 +8,14 @@ import {
   Param,
   UseGuards,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
+import type { Request } from 'express';
+
+interface AuthenticatedRequest extends Request {
+  user?: any;
+}
+
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -24,28 +31,13 @@ import { UserRole } from '@prisma/client';
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
-  // CREATE STUDENT (ADMIN ONLY)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Post()
-  create(@Body() dto: CreateStudentDto) {
-    return this.studentsService.create(dto);
-  }
-
-  // GET ALL STUDENTS (ADMIN & PETUGAS)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.PETUGAS)
-  @Get()
-  findAll() {
-    return this.studentsService.findAll();
-  }
-
   // HISTORY PEMINJAMAN STUDENT SENDIRI
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('my-history')
-  getMyHistory(@Req() req) {
-    return this.studentsService.getMyHistory(req.user.studentId);
+  getMyHistory(@Req() req: AuthenticatedRequest) {
+    const user = req.user as any;
+    return this.studentsService.getMyHistory(user.studentId);
   }
 
   // FIND STUDENT BY NIS
@@ -72,13 +64,19 @@ export class StudentsController {
     return this.studentsService.findOne(Number(id));
   }
 
-  // UPDATE STUDENT (ADMIN ONLY)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateStudentDto) {
-    return this.studentsService.update(Number(id), dto);
+  // UPDATE STUDENT
+@UseGuards(JwtAuthGuard)
+@Put(':id')
+update(@Param('id') id: string, @Body() dto: UpdateStudentDto, @Req() req) {
+
+  const user = req.user as any;
+
+  if (user.role === UserRole.PETUGAS) {
+    throw new ForbiddenException('Petugas tidak bisa mengedit student');
   }
+
+  return this.studentsService.update(Number(id), dto);
+}
 
   // DELETE STUDENT (ADMIN ONLY)
   @UseGuards(JwtAuthGuard, RolesGuard)
