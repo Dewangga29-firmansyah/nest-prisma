@@ -95,7 +95,12 @@ export class StudentsController {
 
   // LOGIN STUDENT
   @Post('login')
-  login(@Body() dto: LoginStudentDto) {
+  login(@Body() dto: LoginStudentDto, @Req() req: AuthenticatedRequest) {
+    const user = req.user as any;
+
+    if( user.role === UserRole.PETUGAS) {
+      throw new ForbiddenException('Petugas tidak bisa login sebagai student');
+    }
     return this.studentsService.login(dto);
   }
 }
