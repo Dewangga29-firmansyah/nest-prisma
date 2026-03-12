@@ -31,6 +31,14 @@ import { UserRole } from '@prisma/client';
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
+  // GET ALL STUDENTS
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.PETUGAS)
+  @Get()
+  findAll() {
+    return this.studentsService.findAll();
+  }
+
   // HISTORY PEMINJAMAN STUDENT SENDIRI
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
@@ -65,18 +73,17 @@ export class StudentsController {
   }
 
   // UPDATE STUDENT
-@UseGuards(JwtAuthGuard)
-@Put(':id')
-update(@Param('id') id: string, @Body() dto: UpdateStudentDto, @Req() req) {
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateStudentDto, @Req() req) {
+    const user = req.user as any;
 
-  const user = req.user as any;
+    if (user.role === UserRole.PETUGAS) {
+      throw new ForbiddenException('Petugas tidak bisa mengedit student');
+    }
 
-  if (user.role === UserRole.PETUGAS) {
-    throw new ForbiddenException('Petugas tidak bisa mengedit student');
+    return this.studentsService.update(Number(id), dto);
   }
-
-  return this.studentsService.update(Number(id), dto);
-}
 
   // DELETE STUDENT (ADMIN ONLY)
   @UseGuards(JwtAuthGuard, RolesGuard)
