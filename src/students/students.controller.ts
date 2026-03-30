@@ -31,6 +31,13 @@ import { UserRole } from '@prisma/client';
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Post()
+  create(@Body() dto: CreateStudentDto) {
+    return this.studentsService.create(dto);
+  }
+
   // GET ALL STUDENTS
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
