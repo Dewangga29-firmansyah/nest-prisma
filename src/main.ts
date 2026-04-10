@@ -16,8 +16,11 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-  deepScanRoutes: true, // ⬅️ INI KUNCI NYA
-});
+    deepScanRoutes: true,
+  });
+
+  // 🔥 INI YANG KURANG
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT || 3000);
 }
