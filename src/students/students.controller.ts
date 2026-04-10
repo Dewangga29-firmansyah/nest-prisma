@@ -26,13 +26,15 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { UserRole } from '@prisma/client';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Students')
 @Controller('students')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
-  @ApiTags('Students')
+  // CREATE STUDENT (ADMIN)
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
@@ -41,6 +43,7 @@ export class StudentsController {
   }
 
   // GET ALL STUDENTS
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get()
@@ -49,6 +52,7 @@ export class StudentsController {
   }
 
   // HISTORY PEMINJAMAN STUDENT SENDIRI
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('my-history')
@@ -58,6 +62,7 @@ export class StudentsController {
   }
 
   // FIND STUDENT BY NIS
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('nis/:nis')
@@ -66,6 +71,7 @@ export class StudentsController {
   }
 
   // SEARCH STUDENT BY NAME
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('search/name/:name')
@@ -74,6 +80,7 @@ export class StudentsController {
   }
 
   // FIND STUDENT BY ID
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get(':id')
@@ -82,9 +89,14 @@ export class StudentsController {
   }
 
   // UPDATE STUDENT
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateStudentDto, @Req() req) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateStudentDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const user = req.user as any;
 
     if (user.role === UserRole.PETUGAS) {
@@ -95,6 +107,7 @@ export class StudentsController {
   }
 
   // DELETE STUDENT (ADMIN ONLY)
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete(':id')
@@ -102,14 +115,9 @@ export class StudentsController {
     return this.studentsService.remove(Number(id));
   }
 
-  // LOGIN STUDENT
+  // LOGIN STUDENT (TIDAK PERLU TOKEN)
   @Post('login')
-  login(@Body() dto: LoginStudentDto, @Req() req: AuthenticatedRequest) {
-    const user = req.user as any;
-
-    if( user.role === UserRole.PETUGAS) {
-      throw new ForbiddenException('Petugas tidak bisa login sebagai student');
-    }
+  login(@Body() dto: LoginStudentDto) {
     return this.studentsService.login(dto);
   }
 }
