@@ -29,12 +29,12 @@ import { UserRole } from '@prisma/client';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Students')
+@ApiBearerAuth() // 🔒 semua endpoint kena Swagger auth
 @Controller('students')
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
   // CREATE STUDENT (ADMIN)
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
@@ -43,7 +43,6 @@ export class StudentsController {
   }
 
   // GET ALL STUDENTS
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get()
@@ -52,7 +51,6 @@ export class StudentsController {
   }
 
   // HISTORY PEMINJAMAN STUDENT SENDIRI
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('my-history')
@@ -62,7 +60,6 @@ export class StudentsController {
   }
 
   // FIND STUDENT BY NIS
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('nis/:nis')
@@ -71,7 +68,6 @@ export class StudentsController {
   }
 
   // SEARCH STUDENT BY NAME
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get('search/name/:name')
@@ -80,7 +76,6 @@ export class StudentsController {
   }
 
   // FIND STUDENT BY ID
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.PETUGAS)
   @Get(':id')
@@ -89,7 +84,6 @@ export class StudentsController {
   }
 
   // UPDATE STUDENT
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
@@ -107,7 +101,6 @@ export class StudentsController {
   }
 
   // DELETE STUDENT (ADMIN ONLY)
-  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Delete(':id')
