@@ -26,7 +26,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { UserRole } from '@prisma/client';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Students')
 @ApiBearerAuth() // 🔒 semua endpoint kena Swagger auth
@@ -39,6 +39,7 @@ export class StudentsController {
   @Roles(UserRole.ADMIN)
   @Post()
   @ApiBearerAuth()
+   @ApiOperation({ summary: 'Create a new student' })
   create(@Body() dto: CreateStudentDto) {
     return this.studentsService.create(dto);
   }
