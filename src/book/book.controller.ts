@@ -19,7 +19,6 @@ import { UpdateBookDto } from './dto/update-book.dto';
 
 @ApiTags('Books')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('books')
 export class BookController {
   constructor(private readonly booksService: BookService) {}
