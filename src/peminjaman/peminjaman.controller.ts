@@ -5,7 +5,9 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags ('Peminjaman')
 @Controller('peminjaman')
 export class PeminjamanController {
   constructor(private readonly peminjamanService: PeminjamanService) {}
