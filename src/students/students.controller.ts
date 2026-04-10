@@ -38,6 +38,7 @@ export class StudentsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Post()
+  @ApiBearerAuth()
   create(@Body() dto: CreateStudentDto) {
     return this.studentsService.create(dto);
   }
