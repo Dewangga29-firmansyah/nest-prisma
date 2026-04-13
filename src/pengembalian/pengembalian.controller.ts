@@ -5,9 +5,10 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Pengembalian')
+@ApiBearerAuth() // 🔥 INI WAJIB BIAR ADA GEMBOK
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN, UserRole.PETUGAS)
 @Controller('pengembalian')
@@ -21,7 +22,7 @@ export class PengembalianController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all pengembalian records' })  
+  @ApiOperation({ summary: 'Get all pengembalian records' })
   findAll() {
     return this.service.findAll();
   }
